@@ -49,7 +49,7 @@ function handlerSearchPhotos(evt) {
 
       Notiflix.Loading.remove();
       createMarkup(data.hits);
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      const simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 
       observer.observe(target);
     })
