@@ -7,7 +7,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const form = document.querySelector('.search-form');
 const galleryEl = document.querySelector('.gallery');
 const target = document.querySelector('.js-guard');
-const btnToTop = document.querySelector('.btn-to-top');
+let simpleLightBox;
 let searchValue = '';
 let page = 1;
 let perPage = 40;
@@ -49,7 +49,7 @@ function handlerSearchPhotos(evt) {
 
       Notiflix.Loading.remove();
       createMarkup(data.hits);
-      const simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 
       observer.observe(target);
     })
