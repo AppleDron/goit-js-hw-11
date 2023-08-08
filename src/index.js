@@ -26,32 +26,32 @@ function handlerSearchPhotos(evt) {
 
   galleryEl.innerHTML = '';
   target.hidden = true;
-  searchValue = evt.currentTarget.searchQuery.value.trim();
+  searchValue = evt.currentTarget.elements.searchQuery.value.trim();
   Notiflix.Loading.standard();
 
   if (searchValue === '') {
     Notiflix.Notify.failure(
       'The search string cannot be empty. Please specify your search query.'
     );
+    Notiflix.Loading.remove();
     return;
   }
 
   getImages(searchValue, page, perPage)
     .then(data => {
-      if (!data.hits.length) {
+      if (data.totalHits === 0) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
       } else {
+        page = 1;
+        Notiflix.Loading.remove();
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        createMarkup(data.hits);
+        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        observer.observe(target);
         target.hidden = false;
       }
-
-      Notiflix.Loading.remove();
-      createMarkup(data.hits);
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-
-      observer.observe(target);
     })
     .catch(error => console.log(error))
     .finally(() => {
@@ -62,12 +62,13 @@ function handlerSearchPhotos(evt) {
 function onLoad(entries, observer) {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      Notiflix.Loading.standard();
+      simpleLightBox.destroy();
       page += 1;
+
       getImages(searchValue, page, perPage)
         .then(data => {
-          Notiflix.Loading.remove();
           createMarkup(data.hits);
+          simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 
           const totalPages = Math.ceil(data.totalHits / perPage);
 
@@ -75,19 +76,10 @@ function onLoad(entries, observer) {
             Notiflix.Notify.failure(
               "We're sorry, but you've reached the end of search results."
             );
+            observer.unobserve(target);
+            page = 1;
+            return;
           }
-
-          // Даний код допомагає нам автоматично проскролити до нової партії картинок
-          // Ми беремо перший елемент з наступної партї картинок та за допомогою методу getBoundingClientRect() отримуємо його розміри і місце розташування
-          // а за допомогою методу scrollBy() скролимо від нашого поточного місця розташування на висоту вказану в cardHeight
-          const { height: cardHeight } = document
-            .querySelector('.gallery')
-            .firstElementChild.getBoundingClientRect();
-
-          window.scrollBy({
-            top: cardHeight * 2,
-            behavior: 'smooth',
-          });
         })
         .catch(err => console.log(err));
     }
