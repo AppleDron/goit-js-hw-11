@@ -43,6 +43,7 @@ function handlerSearchPhotos(evt) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
+        Notiflix.Loading.remove();
       } else {
         page = 1;
         Notiflix.Loading.remove();
@@ -62,7 +63,6 @@ function handlerSearchPhotos(evt) {
 function onLoad(entries, observer) {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      simpleLightBox.destroy();
       page += 1;
 
       getImages(searchValue, page, perPage)
@@ -72,13 +72,13 @@ function onLoad(entries, observer) {
 
           const totalPages = Math.ceil(data.totalHits / perPage);
 
-          if (page > totalPages) {
+          if (page >= totalPages) {
             Notiflix.Notify.failure(
               "We're sorry, but you've reached the end of search results."
             );
+
             observer.unobserve(target);
             page = 1;
-            return;
           }
         })
         .catch(err => console.log(err));
