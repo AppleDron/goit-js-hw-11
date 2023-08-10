@@ -49,7 +49,6 @@ function handlerSearchPhotos(evt) {
         Notiflix.Loading.remove();
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
         createMarkup(data.hits);
-        simpleLightBox.refresh();
 
         const totalPages = Math.ceil(data.totalHits / perPage);
 
@@ -57,13 +56,12 @@ function handlerSearchPhotos(evt) {
           Notiflix.Notify.failure(
             "We're sorry, but you've reached the end of search results."
           );
-
-          page = 1;
-          return;
+        } else {
+          observer.observe(target);
+          target.hidden = false;
         }
 
-        observer.observe(target);
-        target.hidden = false;
+        simpleLightBox.refresh();
       }
     })
     .catch(error => console.log(error))
@@ -79,10 +77,9 @@ function onLoad(entries, observer) {
 
       getImages(searchValue, page, perPage)
         .then(data => {
-          createMarkup(data.hits);
-          simpleLightBox.refresh();
-
           const totalPages = Math.ceil(data.totalHits / perPage);
+
+          createMarkup(data.hits);
 
           if (page === totalPages) {
             Notiflix.Notify.failure(
@@ -90,8 +87,8 @@ function onLoad(entries, observer) {
             );
 
             observer.unobserve(target);
-            return;
           }
+          simpleLightBox.refresh();
         })
         .catch(err => console.log(err));
     }
@@ -142,5 +139,8 @@ function createMarkup(arr) {
     .join('');
 
   galleryEl.insertAdjacentHTML('beforeend', markup);
-  simpleLightBox.refresh();
+  // simpleLightBox.refresh();
+  if (page === 1) {
+    simpleLightBox.refresh();
+  }
 }
