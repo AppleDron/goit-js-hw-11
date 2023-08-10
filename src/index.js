@@ -7,7 +7,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const form = document.querySelector('.search-form');
 const galleryEl = document.querySelector('.gallery');
 const target = document.querySelector('.js-guard');
-let simpleLightBox;
+const simpleLightBox = new SimpleLightbox('.gallery a');
 let searchValue = '';
 let page = 1;
 let perPage = 40;
@@ -49,7 +49,19 @@ function handlerSearchPhotos(evt) {
         Notiflix.Loading.remove();
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
         createMarkup(data.hits);
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        simpleLightBox.refresh();
+
+        const totalPages = Math.ceil(data.totalHits / perPage);
+
+        if (page === totalPages) {
+          Notiflix.Notify.failure(
+            "We're sorry, but you've reached the end of search results."
+          );
+
+          page = 1;
+          return;
+        }
+
         observer.observe(target);
         target.hidden = false;
       }
@@ -63,22 +75,24 @@ function handlerSearchPhotos(evt) {
 function onLoad(entries, observer) {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
+      // simpleLightBox.destroy();
       page += 1;
 
       getImages(searchValue, page, perPage)
         .then(data => {
           createMarkup(data.hits);
-          simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+          simpleLightBox.refresh();
 
           const totalPages = Math.ceil(data.totalHits / perPage);
 
-          if (page >= totalPages) {
+          if (page === totalPages) {
             Notiflix.Notify.failure(
               "We're sorry, but you've reached the end of search results."
             );
 
             observer.unobserve(target);
             page = 1;
+            return;
           }
         })
         .catch(err => console.log(err));
@@ -130,4 +144,5 @@ function createMarkup(arr) {
     .join('');
 
   galleryEl.insertAdjacentHTML('beforeend', markup);
+  simpleLightBox.refresh();
 }
