@@ -75,7 +75,6 @@ function handlerSearchPhotos(evt) {
 function onLoad(entries, observer) {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      // simpleLightBox.destroy();
       page += 1;
 
       getImages(searchValue, page, perPage)
@@ -91,7 +90,6 @@ function onLoad(entries, observer) {
             );
 
             observer.unobserve(target);
-            page = 1;
             return;
           }
         })
