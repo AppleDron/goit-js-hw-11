@@ -24,6 +24,7 @@ form.addEventListener('submit', handlerSearchPhotos);
 function handlerSearchPhotos(evt) {
   evt.preventDefault();
 
+  page = 1;
   galleryEl.innerHTML = '';
   target.hidden = true;
   searchValue = evt.currentTarget.elements.searchQuery.value.trim();
