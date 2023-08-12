@@ -6,27 +6,23 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.querySelector('.search-form');
 const galleryEl = document.querySelector('.gallery');
-const target = document.querySelector('.js-guard');
 const simpleLightBox = new SimpleLightbox('.gallery a');
+const btnLoadMore = document.querySelector('.load-more');
+btnLoadMore.style.display = 'none';
+
 let searchValue = '';
 let page = 1;
 let perPage = 40;
 
-let options = {
-  root: null,
-  rootMargin: '400px',
-  threshold: 1.0,
-};
-let observer = new IntersectionObserver(onLoad, options);
-
 form.addEventListener('submit', handlerSearchPhotos);
+btnLoadMore.addEventListener('click', onLoad);
+btnLoadMore.hidden = true;
 
 function handlerSearchPhotos(evt) {
   evt.preventDefault();
 
   page = 1;
   galleryEl.innerHTML = '';
-  target.hidden = true;
   searchValue = evt.currentTarget.elements.searchQuery.value.trim();
   Notiflix.Loading.standard();
 
@@ -57,9 +53,9 @@ function handlerSearchPhotos(evt) {
           Notiflix.Notify.failure(
             "We're sorry, but you've reached the end of search results."
           );
+          btnLoadMore.hidden = true;
         } else {
-          observer.observe(target);
-          target.hidden = false;
+          btnLoadMore.style.display = 'block';
         }
 
         simpleLightBox.refresh();
@@ -71,29 +67,26 @@ function handlerSearchPhotos(evt) {
     });
 }
 
-function onLoad(entries, observer) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      page += 1;
+function onLoad() {
+  page += 1;
 
-      getImages(searchValue, page, perPage)
-        .then(data => {
-          createMarkup(data.hits);
+  getImages(searchValue, page, perPage)
+    .then(data => {
+      createMarkup(data.hits);
 
-          const totalPages = Math.ceil(data.totalHits / perPage);
+      const totalPages = Math.ceil(data.totalHits / perPage);
 
-          if (page === totalPages) {
-            Notiflix.Notify.failure(
-              "We're sorry, but you've reached the end of search results."
-            );
-
-            observer.unobserve(target);
-          }
-          simpleLightBox.refresh();
-        })
-        .catch(err => console.log(err));
-    }
-  });
+      if (page === totalPages) {
+        Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+        btnLoadMore.style.display = 'none';
+      }
+      simpleLightBox.refresh();
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
 function createMarkup(arr) {
@@ -140,7 +133,7 @@ function createMarkup(arr) {
     .join('');
 
   galleryEl.insertAdjacentHTML('beforeend', markup);
-  // simpleLightBox.refresh();
+
   if (page === 1) {
     simpleLightBox.refresh();
   }

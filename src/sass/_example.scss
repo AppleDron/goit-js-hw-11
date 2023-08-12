@@ -67,7 +67,7 @@ input[type="text"] {
     position: relative;
 }
 
-button {
+.search-btn {
     display: none;
     position: absolute;
     top: 0;
@@ -153,15 +153,17 @@ label {
     align-items: center;
 }
 
-.btn-to-top {
-    font-size: 2.5em;
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    cursor: pointer;
-    z-index: 2;
-}
+.load-more {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-weight: bold;
+    background: var(--color-brand);
+    border-radius: var(--rad) var(--rad) var(--rad) var(--rad);
 
-.btn-to-top::before {
-    content: '🔝';
+    &:hover {
+            box-shadow: 0px 0px 4px rgba(58, 130, 238, 0.75);
+        }
 }
