@@ -16,11 +16,11 @@ let perPage = 40;
 
 form.addEventListener('submit', handlerSearchPhotos);
 btnLoadMore.addEventListener('click', onLoad);
-btnLoadMore.hidden = true;
 
 function handlerSearchPhotos(evt) {
   evt.preventDefault();
 
+  btnLoadMore.style.display = 'none';
   page = 1;
   galleryEl.innerHTML = '';
   searchValue = evt.currentTarget.elements.searchQuery.value.trim();
@@ -31,7 +31,7 @@ function handlerSearchPhotos(evt) {
       'The search string cannot be empty. Please specify your search query.'
     );
     Notiflix.Loading.remove();
-    btnLoadMore.hidden = true;
+    btnLoadMore.style.display = 'none';
     return;
   }
 
@@ -42,7 +42,7 @@ function handlerSearchPhotos(evt) {
           'Sorry, there are no images matching your search query. Please try again.'
         );
         Notiflix.Loading.remove();
-        btnLoadMore.hidden = true;
+        btnLoadMore.style.display = 'none';
       } else {
         page = 1;
         Notiflix.Loading.remove();
@@ -55,7 +55,7 @@ function handlerSearchPhotos(evt) {
           Notiflix.Notify.failure(
             "We're sorry, but you've reached the end of search results."
           );
-          btnLoadMore.hidden = true;
+          btnLoadMore.style.display = 'none';
         } else {
           btnLoadMore.style.display = 'block';
         }
