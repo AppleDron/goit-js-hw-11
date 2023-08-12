@@ -78,9 +78,9 @@ function onLoad(entries, observer) {
 
       getImages(searchValue, page, perPage)
         .then(data => {
-          const totalPages = Math.ceil(data.totalHits / perPage);
-
           createMarkup(data.hits);
+
+          const totalPages = Math.ceil(data.totalHits / perPage);
 
           if (page === totalPages) {
             Notiflix.Notify.failure(
