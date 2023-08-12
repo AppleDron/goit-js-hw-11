@@ -31,6 +31,7 @@ function handlerSearchPhotos(evt) {
       'The search string cannot be empty. Please specify your search query.'
     );
     Notiflix.Loading.remove();
+    btnLoadMore.hidden = true;
     return;
   }
 
@@ -41,6 +42,7 @@ function handlerSearchPhotos(evt) {
           'Sorry, there are no images matching your search query. Please try again.'
         );
         Notiflix.Loading.remove();
+        btnLoadMore.hidden = true;
       } else {
         page = 1;
         Notiflix.Loading.remove();
@@ -133,7 +135,6 @@ function createMarkup(arr) {
     .join('');
 
   galleryEl.insertAdjacentHTML('beforeend', markup);
-
   if (page === 1) {
     simpleLightBox.refresh();
   }
